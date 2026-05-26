@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libro de Prompts - IA Generativa</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; }
+    header { background: linear-gradient(135deg, #000510, #0a0a2e); padding: 4rem 2rem; text-align: center; border-bottom: 1px solid rgba(0,255,204,0.3); }
+    header h1 { font-size: clamp(1.8rem, 4vw, 3rem); color: #00ffcc; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(0,255,204,0.5); }
+    header p { color: #888; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+    .badge { display: inline-block; background: rgba(0,255,204,0.1); border: 1px solid rgba(0,255,204,0.3); color: #00ffcc; padding: 0.4rem 1rem; border-radius: 20px; margin-top: 1rem; font-size: 0.85rem; }
+    nav { background: rgba(0,0,0,0.9); padding: 1rem 2rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(0,255,204,0.1); }
+    nav a { color: #888; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    nav a:hover { color: #00ffcc; background: rgba(0,255,204,0.05); }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    .section { margin: 3rem 0; }
+    .section-header { border-left: 4px solid #00ffcc; padding-left: 1rem; margin-bottom: 2rem; }
+    .section-header h2 { font-size: 1.6rem; color: #00ffcc; margin-bottom: 0.5rem; }
+    .section-header p { color: #888; font-size: 0.9rem; }
+    .prompt-card { background: rgba(0,255,204,0.02); border: 1px solid rgba(0,255,204,0.15); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; transition: border-color 0.3s; }
+    .prompt-card:hover { border-color: rgba(0,255,204,0.3); }
+    .prompt-card h3 { color: #00ffcc; margin-bottom: 1rem; font-size: 1.1rem; }
+    .prompt-meta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .meta-tag { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: #aaa; }
+    .prompt-text { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 1rem; font-family: monospace; font-size: 0.85rem; color: #ccc; margin: 0.8rem 0; white-space: pre-wrap; }
+    .result { background: rgba(0,255,204,0.03); border-left: 3px solid #00ffcc; padding: 1rem; margin: 0.8rem 0; border-radius: 0 4px 4px 0; }
+    .result strong { color: #00ffcc; }
+    .iterations { margin-top: 1rem; }
+    .iterations h4 { color: #ff00ff; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .iter-list { list-style: none; }
+    .iter-list li { padding: 0.4rem 0; color: #999; font-size: 0.85rem; }
+    .iter-list li::before { content: "→ "; color: #ff00ff; }
+    .observations { background: rgba(255,107,53,0.03); border: 1px solid rgba(255,107,53,0.2); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+    .observations h3 { color: #ff6b35; margin-bottom: 1rem; }
+    .obs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .obs-item { background: rgba(0,0,0,0.3); border-radius: 4px; padding: 1rem; }
+    .obs-item h4 { color: #ff6b35; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .obs-item ul { list-style: none; }
+    .obs-item li { color: #999; font-size: 0.85rem; padding: 0.3rem 0; }
+    .obs-item li::before { content: "• "; color: #ff6b35; }
+    .project-link { display: block; background: linear-gradient(135deg, rgba(0,255,204,0.1), rgba(255,0,255,0.1)); border: 1px solid rgba(0,255,204,0.3); border-radius: 8px; padding: 1.5rem; text-align: center; text-decoration: none; color: #00ffcc; margin: 2rem 0; transition: all 0.3s; }
+    .project-link:hover { background: linear-gradient(135deg, rgba(0,255,204,0.15), rgba(255,0,255,0.15)); box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+    .project-link .link-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .project-link .link-url { font-size: 0.85rem; color: #888; font-family: monospace; }
+    footer { background: #000; padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(0,255,204,0.1); margin-top: 4rem; }
+    footer p { color: #555; font-size: 0.9rem; }
+    footer a { color: #00ffcc; text-decoration: none; }
+    @media (max-width: 600px) { .prompt-meta { flex-direction: column; } nav { gap: 0.5rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>&#x1F4DA; Libro de Prompts</h1>
+    <p>Documentacion completa del proceso creativo del proyecto "El Despertar de la IA" usando herramientas de IA Generativa</p>
+    <span class="badge">AI for Professionals @ 4Geeks Academy</span>
+  </header>
+
+  <nav>
+    <a href="#intro">Introduccion</a>
+    <a href="#chatgpt">ChatGPT</a>
+    <a href="#krea">Krea.ai</a>
+    <a href="#runway">Runway</a>
+    <a href="#liveportrait">Live Portrait</a>
+    <a href="#claude">Claude AI</a>
+    <a href="#observaciones">Observaciones</a>
+  </nav>
+
+  <div class="container">
+
+    <section id="intro" class="section">
+      <div class="section-header">
+        <h2>&#x1F3AF; Introduccion</h2>
+        <p>Resumen del proyecto y herramientas utilizadas</p>
+      </div>
+      <p style="line-height:1.8;color:#bbb;margin-bottom:1.5rem">
+        Este Libro de Prompts documenta el proceso creativo completo del proyecto <strong style="color:#00ffcc">El Despertar de la IA</strong>, una narrativa visual interactiva que explora la evolucion de la inteligencia artificial generativa a traves de tres eras tematicas: Caveman, Superpowers y Cyber Neo.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0">
+        <div style="background:rgba(0,255,204,0.05);border:1px solid rgba(0,255,204,0.2);border-radius:8px;padding:1rem;text-align:center">
+          <div style="font-size:2rem">&#x1F4AC;</div>
+          <div style="color:#00ffcc;font-weight:bold;margin-top:0.5rem">ChatGPT</div>
+          <div style="color:#888;font-size:0.8rem">Narrativas y conceptos</div>
+        </div>
+        <div style="background:rgba(0,255,204,0.05);border:1px solid rgba(0,255,204,0.2);border-radius:8px;padding:1rem;text-align:center">
+          <div style="font-size:2rem">&#x1F3A8;</div>
+          <div style="color:#00ffcc;font-weight:bold;margin-top:0.5rem">Krea.ai</div>
+          <div style="color:#888;font-size:0.8rem">Generacion de imagenes</div>
+        </div>
+        <div style="background:rgba(0,255,204,0.05);border:1px solid rgba(0,255,204,0.2);border-radius:8px;padding:1rem;text-align:center">
+          <div style="font-size:2rem">&#x1F3AC;</div>
+          <div style="color:#00ffcc;font-weight:bold;margin-top:0.5rem">Runway ML</div>
+          <div style="color:#888;font-size:0.8rem">Video y animacion</div>
+        </div>
+        <div style="background:rgba(0,255,204,0.05);border:1px solid rgba(0,255,204,0.2);border-radius:8px;padding:1rem;text-align:center">
+          <div style="font-size:2rem">&#x1F916;</div>
+          <div style="color:#00ffcc;font-weight:bold;margin-top:0.5rem">Claude AI</div>
+          <div style="color:#888;font-size:0.8rem">Desarrollo de codigo</div>
+        </div>
+      </div>
+      <a class="project-link" href="https://avilacarlosdev.github.io/ai-generativa-proyecto-final/" target="_blank">
+        <div class="link-title">&#x1F680; Ver Proyecto Final en Vivo</div>
+        <div class="link-url">https://avilacarlosdev.github.io/ai-generativa-proyecto-final/</div>
+      </a>
+    </section>
+
+    <section id="chatgpt" class="section">
+      <div class="section-header">
+        <h2>&#x1F4AC; Seccion 1: ChatGPT — Conceptualizacion</h2>
+        <p>Prompts para narrativas y estructura del proyecto</p>
+      </div>
+
+      <div class="prompt-card">
+        <h3>Prompt 1.1 — Concepto del Proyecto</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F916; ChatGPT 4o</span>
+          <span class="meta-tag">&#x1F4C5; Mayo 2026</span>
+          <span class="meta-tag">&#x1F3AF; Conceptualizacion</span>
+        </div>
+        <div class="prompt-text">Necesito crear un proyecto creativo para un curso de IA generativa. Quiero que sea un sitio web narrativo que cuente la historia de la evolucion de la IA desde sus origenes primitivos hasta el futuro ciberpunk. Dame un concepto creativo con 3 eras tematicas y nombre para el proyecto.</div>
+        <div class="result"><strong>Resultado:</strong> Surgio el concepto "El Despertar de la IA" con las 3 eras: Caveman (origen primitivo), Superpowers (era actual), Cyber Neo (futuro). La estructura narrativa clara permitio organizar todo el proyecto.</div>
+        <div class="iterations">
+          <h4>&#x1F504; Iteraciones</h4>
+          <ul class="iter-list">
+            <li>Primera respuesta: concepto demasiado generico</li>
+            <li>Segunda iteracion: añadiendo "inspirado en trilogia cinematica"</li>
+            <li>Resultado final: nombres y esteticas bien definidos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prompt-card">
+        <h3>Prompt 1.2 — Narrativas Era Caveman</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F916; ChatGPT 4o</span>
+          <span class="meta-tag">&#x1FAA8; Era Primitiva</span>
+        </div>
+        <div class="prompt-text">Para la era 'Caveman' del proyecto, escribe 3 parrafos narrativos que describan los primeros algoritmos, sistemas expertos y modelos de lenguaje primitivos, usando metaforas de la era de las cavernas. El tono debe ser epico y poetico.</div>
+        <div class="result"><strong>Resultado:</strong> Se obtuvieron narrativas evocadoras que conectaban la computacion primitiva con imagenes de hombres primitivos descubriendo el fuego. Muy efectivo para el estilo visual del sitio.</div>
+      </div>
+    </section>
+
+    <section id="krea" class="section">
+      <div class="section-header">
+        <h2>&#x1F3A8; Seccion 2: Krea.ai — Generacion Visual</h2>
+        <p>Prompts para paletas de color y estilos visuales</p>
+      </div>
+
+      <div class="prompt-card">
+        <h3>Prompt 2.1 — Paleta Caveman</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F3A8; Krea.ai</span>
+          <span class="meta-tag">&#x1FAA8; Estilo Primitivo</span>
+        </div>
+        <div class="prompt-text">Dark cave background with prehistoric paintings, warm earth tones, brown sienna wheat colors, primitive AI algorithms visualized as cave paintings, cinematic lighting, 8k quality</div>
+        <div class="result"><strong>Resultado:</strong> Paletas que inspiraron el CSS: marrones (#2d1b00), siennas (#8b4513), tonos trigo (#f5deb3). Krea.ai interpreto perfectamente la estetica primitiva.</div>
+      </div>
+
+      <div class="prompt-card">
+        <h3>Prompt 2.2 — Estilo Cyber Neo</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F3A8; Krea.ai</span>
+          <span class="meta-tag">&#x1F916; Cyber Neo</span>
+        </div>
+        <div class="prompt-text">Cyberpunk city 2047, neon green #00ffcc circuit grid, neural network visualization, dark background #000510, AI nodes and connections, futuristic technology aesthetic, blade runner inspired</div>
+        <div class="result"><strong>Resultado:</strong> Imagenes que capturaron la estetica Cyber Neo. Los codigos hex especificos produjeron resultados mucho mas precisos y utilizables directamente en CSS.</div>
+        <div class="iterations">
+          <h4>&#x1F504; Iteraciones clave</h4>
+          <ul class="iter-list">
+            <li>Sin hex: resultado generico azul/morado</li>
+            <li>Con #00ffcc especifico: resultado preciso y utilizable</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="runway" class="section">
+      <div class="section-header">
+        <h2>&#x1F3AC; Seccion 3: Runway ML — Video y Animacion</h2>
+        <p>Prompts para animaciones cinematograficas</p>
+      </div>
+      <div class="prompt-card">
+        <h3>Prompt 3.1 — Transicion Era Caveman</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F3AC; Runway ML Gen-2</span>
+          <span class="meta-tag">&#x23F1;&#xFE0F; 4 segundos</span>
+        </div>
+        <div class="prompt-text">Slow camera pan over prehistoric cave paintings that gradually transform into glowing circuit boards, particles of light, smooth transition, 4 seconds</div>
+        <div class="result"><strong>Resultado:</strong> Animacion de 4 segundos mostrando la transicion de pinturas rupestres a circuitos. La combinacion Krea.ai + Runway fue muy efectiva.</div>
+      </div>
+    </section>
+
+    <section id="liveportrait" class="section">
+      <div class="section-header">
+        <h2>&#x1F3AD; Seccion 4: Live Portrait — Animacion Facial</h2>
+        <p>Configuracion y resultados de animacion de retratos</p>
+      </div>
+      <div class="prompt-card">
+        <h3>Prompt 4.1 — Personaje Narrador</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F3AD; Live Portrait HF</span>
+          <span class="meta-tag">&#x1F4CA; Scale 1.2</span>
+        </div>
+        <div class="prompt-text">Input: Retrato estilo pinturas rupestres (Krea.ai output)
+Expression scale: 1.2 | Motion scale: 0.8 | FPS: 25</div>
+        <div class="result"><strong>Resultado:</strong> "Groog el programador primitivo" cobro vida para narrar el origen de los algoritmos. Mejor con retratos frontales bien iluminados.</div>
+      </div>
+    </section>
+
+    <section id="claude" class="section">
+      <div class="section-header">
+        <h2>&#x1F916; Seccion 5: Claude AI — Desarrollo Web</h2>
+        <p>Prompts para generacion de codigo HTML/CSS/JS</p>
+      </div>
+      <div class="prompt-card">
+        <h3>Prompt 5.1 — Estructura del Sitio</h3>
+        <div class="prompt-meta">
+          <span class="meta-tag">&#x1F916; Claude AI</span>
+          <span class="meta-tag">&#x1F4BB; HTML/CSS/JS</span>
+        </div>
+        <div class="prompt-text">Crea un sitio web HTML/CSS/JS con 3 secciones tematicas: Caveman (colores marrones), Superpowers (naranja/purpura), Cyber Neo (neon verde). Debe tener navegacion fija, animaciones suaves, cards con hover effects, barra de progreso animada y diseno responsive.</div>
+        <div class="result"><strong>Resultado:</strong> Codigo HTML completo y funcional. El sitio paso de concepto a implementacion en una sola sesion con Claude AI.</div>
+        <div class="iterations">
+          <h4>&#x1F504; Iteraciones</h4>
+          <ul class="iter-list">
+            <li>V1: Sin animaciones CSS</li>
+            <li>V2: Con animaciones float, glow y progress bar</li>
+            <li>V3: Todas las secciones pulidas y responsive</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="observaciones" class="section">
+      <div class="observations">
+        <h3>&#x1F4A1; Observaciones y Reflexiones Finales</h3>
+        <div class="obs-grid">
+          <div class="obs-item">
+            <h4>Fortalezas</h4>
+            <ul>
+              <li>ChatGPT: excelente narrativas</li>
+              <li>Krea.ai: preciso con hex</li>
+              <li>Runway: transiciones suaves</li>
+              <li>Claude: codigo funcional</li>
+            </ul>
+          </div>
+          <div class="obs-item">
+            <h4>Limitaciones</h4>
+            <ul>
+              <li>Krea.ai: prompts vagos = genericos</li>
+              <li>Runway: necesita imagenes HD</li>
+              <li>Live Portrait: solo frontales</li>
+              <li>ChatGPT: primera respuesta generica</li>
+            </ul>
+          </div>
+          <div class="obs-item">
+            <h4>Lecciones</h4>
+            <ul>
+              <li>Especificidad = mejores resultados</li>
+              <li>Iterar es clave</li>
+              <li>Combinar herramientas</li>
+              <li>Documentar todo</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:1.5rem;color:#bbb;line-height:1.8;font-style:italic">
+          "Trabajar con IA generativa transforma el proceso creativo. El prompt es el nuevo pincel, y aprender a usarlo efectivamente es el arte moderno. La IA no reemplaza la creatividad humana, la amplifica."
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p style="font-size:1.2rem;margin-bottom:1rem;color:#00ffcc">&#x1F4DA; Libro de Prompts</p>
+    <p>Proyecto Final &mdash; <strong style="color:#00ffcc">AI for Professionals</strong> @ 4Geeks Academy</p>
+    <br>
+    <p>Por <a href="https://github.com/AvilaCarlosDev">Carlos Avila (@AvilaCarlosDev)</a></p>
+    <br>
+    <p>&copy; 2026 | <a href="https://avilacarlosdev.github.io/ai-generativa-proyecto-final/">Ver Proyecto Final</a></p>
+  </footer>
+
+</body>
+</html>
